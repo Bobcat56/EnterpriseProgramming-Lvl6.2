@@ -38,11 +38,11 @@ namespace Presentation.Controllers
             if (User.Identity.IsAuthenticated == false)
             {
                 //Can make a toast which says "Only logged in users can view history of purchased tickets"
-                TempData["error"] = "You must be logged in to view this";
+                TempData["errorMsg"] = "You must be logged in to view this";
 
                 // Return to home (Index page) or other page? 
-                //return RedirectToAction("Index", "Home");
-                //return RedirectToAction("Index", Request) //Used during error handling testing
+                return RedirectToAction("Index", "Home");
+                //return RedirectToAction("Index", Request) //Used for error handling testing (Brings up html page displaying erro)
             }
 
             return View();
