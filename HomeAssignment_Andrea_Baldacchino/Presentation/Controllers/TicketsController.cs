@@ -41,7 +41,8 @@ namespace Presentation.Controllers
                 TempData["error"] = "You must be logged in to view this";
 
                 // Return to home (Index page) or other page? 
-                return RedirectToAction("Index", "Home");
+                //return RedirectToAction("Index", "Home");
+                //return RedirectToAction("Index", Request) //Used during error handling testing
             }
 
             return View();

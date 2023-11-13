@@ -29,10 +29,19 @@
                     <partial name="_LoginPartial" />
                 </div>
             </div>
-        </nav>
-    </header>
+        </nav><!--End of Navigation bar -->
+    </header><!--End of header segment of the web page-->
+
     <div class="container">
         <main role="main" class="pb-3">
+            
+            <div class="alert alert-dark" role="alert">
+                @if (TempData["error"] != null)
+                {
+                    
+                }
+            </div>
+            
             @RenderBody()
         </main>
     </div>
