@@ -18,7 +18,11 @@ namespace Presentation.Controllers
         public IActionResult BookFlight()
         {
             /*
-                 
+                 Allows the user to book a flight after entering their details.
+                    a.) Flight must NOT be fully booked 
+                    c.) Flight must NOT be cancelled
+                    b.) Flight must NOT be in the past
+                    c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice
             */
 
             return View();
