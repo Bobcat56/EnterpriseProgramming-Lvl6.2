@@ -4,6 +4,12 @@ namespace Presentation.Controllers
 {
     public class TicketsController : Controller
     {
+
+        /*Task 4*/
+
+
+        /* Method (and View) which returns and shows on page a list of Flights that one can choose with RETAIL prices displayed.
+         * Requirements [1.5] */
         public IActionResult ListFlights()
         {   
             /* 
@@ -15,6 +21,8 @@ namespace Presentation.Controllers
             return View();
         }
 
+        /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket. 
+         * Requirements [2]*/
         public IActionResult BookFlight()
         {
             /*
@@ -29,6 +37,10 @@ namespace Presentation.Controllers
         }
 
 
+
+        /*Method (and View) which returns a list of Tickets (i.e. use GetTickets from Repository) which then returns a history list 
+         *of tickets purchased by the logged in client (See Se3.3 for authentication) [1.5]
+*/
         public IActionResult ListTicketHistory()
         {
             /*
