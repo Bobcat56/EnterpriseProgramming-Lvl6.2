@@ -54,7 +54,7 @@ namespace Presentation.Controllers
 
                 // Return to home (Index page) or other page? 
                 return RedirectToAction("Index", "Home");
-                //return RedirectToAction("Index", Request) //Used for error handling testing (Brings up html page displaying erro)
+                //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying erro)
             }
 
             return View();
