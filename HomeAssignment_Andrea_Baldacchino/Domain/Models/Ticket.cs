@@ -12,15 +12,18 @@ namespace Domain.Models
      * Id, Row, Column, FlightIdFK, Passport, PricePaid, Cancelled */
     public class Ticket
     {
+        public Ticket()
+        {
+            Id = Guid.NewGuid();
+        }
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
         public int Row { get; set; }
         public char Column { get; set; }
 
-        [ForeignKey(nameof(Flight))]
-        public int FlightIdFK { get; set; }
-        public Flight Flight { get; set; }
+        [ForeignKey("Flight")]
+        public int FlightIdFK { get; set; }// Foreign Key
+        public Flight Flight { get; set; } //Navigational Property
         public string Passport { get; set; }
         public double PricePaid { get; set; }
         public Boolean Canelled { get; set; }
