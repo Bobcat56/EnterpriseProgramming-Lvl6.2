@@ -56,7 +56,7 @@ namespace Data.Repositories
 
                 _AirLineDBContext.FlightSeatings.Add(newSeat);
             }else {
-                // Seat exists but is not booked, update the seat
+                // If seat exists but is not booked, update the seat
                 existingSeat.BookedSeat = true;
                 existingSeat.TicketIdFK = ticket.Id;
             }
@@ -71,17 +71,32 @@ namespace Data.Repositories
         {
             // A method which allows the booked ticket to be cancelled and not deleted.
             // Once cancelled someone else can book the released seat again[1]
-            var CanlledTicket = _AirLineDBContext.Tickets.FirstOrDefault(t => t.Id == id);
+            var CanlledTicket = _AirLineDBContext.Tickets.FirstOrDefault
+                (t => t.Id == id);
 
             //Validation to check if ticket exists
             if (CanlledTicket != null)
             {
-                //Set the boolean to false and save
+                //Expression means: Find the first that matches: TicketIdFK from table FligthSeating
+                var releaseSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
+                    (fs => fs.TicketIdFK == id);
+
+                //Mark the ticket as cancelled
                 CanlledTicket.Canelled = true;
+
+                if (releaseSeat != null)
+                {
+                    //Remove the connection between this ticket and the seat, and free up the seat
+                    releaseSeat.TicketIdFK = null;
+                    releaseSeat.BookedSeat = false;
+                }
                 _AirLineDBContext.SaveChanges();
+            }else
+            {
+                throw new InvalidOperationException("This ticket does not exist");
             }
 
-
+            
         }
 
         public IQueryable<Ticket> GetTickets(Guid id)
