@@ -77,12 +77,12 @@ namespace Data.Repositories
             //Validation to check if ticket exists
             if (CanlledTicket != null)
             {
+                //Mark the ticket as cancelled
+                CanlledTicket.Canelled = true;
+
                 //Expression means: Find the first that matches: TicketIdFK from table FligthSeating
                 var releaseSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
                     (fs => fs.TicketIdFK == id);
-
-                //Mark the ticket as cancelled
-                CanlledTicket.Canelled = true;
 
                 if (releaseSeat != null)
                 {
@@ -90,13 +90,14 @@ namespace Data.Repositories
                     releaseSeat.TicketIdFK = null;
                     releaseSeat.BookedSeat = false;
                 }
-                _AirLineDBContext.SaveChanges();
-            }else
-            {
+                else {
+                    throw new InvalidOperationException("Error: Seat not found");
+                }
+
+                    _AirLineDBContext.SaveChanges();
+            }else {
                 throw new InvalidOperationException("This ticket does not exist");
             }
-
-            
         }
 
         public IQueryable<Ticket> GetTickets(Guid id)

@@ -1,24 +1,48 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data.Repositories;
+using Domain.Models;
+using Microsoft.AspNetCore.Mvc;
+using Presentation.Models.ViewModels;
 
 namespace Presentation.Controllers
 {
     public class TicketsController : Controller
     {
-
         /*Task 4*/
+        private FlightDbRepository _flightDbRepository;
+        private TicketDBRepository _ticketDBRepository;
+        public TicketsController(TicketDBRepository ticketDBRepository) { 
+            _ticketDBRepository = ticketDBRepository;
+        }
+        
+        public TicketsController(FlightDbRepository flightDbRepository) {
+            _flightDbRepository = flightDbRepository;
+        }
 
 
         /* Method (and View) which returns and shows on page a list of Flights that one can choose with RETAIL prices displayed.
          * Requirements [1.5] */
         public IActionResult ListFlights()
-        {   
+        {
             /* 
                 This is to return a web page which displays flights that can be booked
                     a.) Fully booked flights CAN NOT be selected, BUT still displayed 
                     b.) If Departure date is in the past, DO NOT DISPLAY
             */
+            IQueryable<Flight> list = _flightDbRepository.GetFlights().Where(x=> x.DepartureDate > DateTime.Now);
 
-            return View();
+            var output = from flight in list
+                         select new ListFlightViewModel()
+                         {
+                            Id = flight.Id,
+                            DepartureDate = flight.DepartureDate,
+                            ArrivalDate = flight.ArrivalDate,
+                            CountryFrom = flight.CountryFrom,
+                            CountryTo = flight.CountryTo,
+                            RetailPrice = flight.WholeSalePrice * (flight.ComissionRate / 100)
+                            //(comission% / 100) * wholesale price = Retail price
+                         };
+
+            return View(output);
         }
 
         /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket. 
