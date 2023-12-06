@@ -12,18 +12,14 @@ namespace Domain.Models
      * Id, Rows, Columns, DepartureDate, ArrivalDate, CountryFrom, CountryTo, WholesalePrice, CommissionRate */
     public class Flight
     {
-        public Flight()
-        {
-            //Id = Guid.NewGuid();
-        }
         [Key]
         public Guid Id { get; set; }
         public int Rows { get; set; }
         public int Columns { get; set; }
         public DateTime DepartureDate { get; set; }
         public DateTime ArrivalDate { get; set; }
-        public string CountryFrom { get; set; }
-        public string CountryTo { get; set; }
+        public string? CountryFrom { get; set; }
+        public string? CountryTo { get; set; }
         public double WholeSalePrice { get; set; }
         public double ComissionRate { get; set; }
     
