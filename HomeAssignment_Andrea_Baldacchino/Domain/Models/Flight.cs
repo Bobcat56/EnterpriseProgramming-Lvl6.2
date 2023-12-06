@@ -14,7 +14,7 @@ namespace Domain.Models
     {
         public Flight()
         {
-            Id = Guid.NewGuid();
+            //Id = Guid.NewGuid();
         }
         [Key]
         public Guid Id { get; set; }

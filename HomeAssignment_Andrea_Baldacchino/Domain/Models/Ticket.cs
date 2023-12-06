@@ -14,7 +14,7 @@ namespace Domain.Models
     {
         public Ticket()
         {
-            Id = Guid.NewGuid();
+            //Id = Guid.NewGuid();
         }
         [Key]
         public Guid Id { get; set; }
@@ -22,7 +22,7 @@ namespace Domain.Models
         public char Column { get; set; }
 
         [ForeignKey("Flight")]
-        public int FlightIdFK { get; set; }// Foreign Key
+        public Guid FlightIdFK { get; set; }// Foreign Key
         public Flight Flight { get; set; } //Navigational Property
         public string Passport { get; set; }
         public double PricePaid { get; set; }

@@ -23,5 +23,12 @@ namespace Data.DataContext
         public DbSet<Flight> Flights { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Flight>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+            builder.Entity<Ticket>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+        }
+
     }//Close class
-}
+ }
