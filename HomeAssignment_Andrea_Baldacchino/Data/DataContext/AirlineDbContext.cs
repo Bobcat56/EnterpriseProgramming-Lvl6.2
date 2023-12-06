@@ -30,8 +30,7 @@ namespace Data.DataContext
             //Set the ID's to auto generate a GUID
             builder.Entity<Flight>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
             builder.Entity<Ticket>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
-            //Set the Cancelled boolean to automatically be set to false (In the tickets Db)
-            //builder.Entity<Ticket>().Property(x => x.Canelled).HasDefaultValueSql("False");
+            builder.Entity<FlightSeating>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
         }
 
     }//Close class

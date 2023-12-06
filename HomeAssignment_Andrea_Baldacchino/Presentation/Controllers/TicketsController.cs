@@ -10,11 +10,8 @@ namespace Presentation.Controllers
         /*Task 4*/
         private FlightDbRepository _flightDbRepository;
         private TicketDBRepository _ticketDBRepository;
-        public TicketsController(TicketDBRepository ticketDBRepository) { 
+        public TicketsController(TicketDBRepository ticketDBRepository, FlightDbRepository flightDbRepository) { 
             _ticketDBRepository = ticketDBRepository;
-        }
-        
-        public TicketsController(FlightDbRepository flightDbRepository) {
             _flightDbRepository = flightDbRepository;
         }
 
@@ -34,12 +31,12 @@ namespace Presentation.Controllers
                          select new ListFlightViewModel()
                          {
                             Id = flight.Id,
+                            AvailableSeats = flight.AvailableSeats,
                             DepartureDate = flight.DepartureDate,
                             ArrivalDate = flight.ArrivalDate,
                             CountryFrom = flight.CountryFrom,
                             CountryTo = flight.CountryTo,
-                            RetailPrice = flight.WholeSalePrice * (flight.ComissionRate / 100)
-                            //(comission% / 100) * wholesale price = Retail price
+                            RetailPrice = flight.WholeSalePrice * (flight.ComissionRate / 100) //(comission% / 100) * wholesale price = Retail price
                          };
 
             return View(output);
