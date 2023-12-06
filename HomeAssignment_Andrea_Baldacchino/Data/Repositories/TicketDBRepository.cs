@@ -23,8 +23,48 @@ namespace Data.Repositories
         {
             // A method that allows any client to book a ticket.
             // Double booking a seat is not allowed[1].
+
+            var flight = _AirLineDBContext.Flights.Find(ticket.FlightIdFK);
+
+            //FlightSeating will save the SeatLocation as a concatinated as follows: 6,3
+            var seatLocation = $"{ticket.Row},{ticket.Column}";
+
+            /*Lambda expression does as follows:
+             *Find the first entry that mathes the following:
+             *FlidghtIdFk == The newly generated tickets FlightIdFK & the seatLocation == tickets newly generated seating*/
+            var existingSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
+                (fs => fs.FlightIdFK == ticket.FlightIdFK && fs.SeatLocation == seatLocation);
+
+            //If 
+            if (existingSeat != null && existingSeat.BookedSeat)
+            {
+                // Seat is already booked, exception handling
+                throw new InvalidOperationException("Seat is already booked.");
+            }
+
+
+            //If seat does not exist create it.
+            if (existingSeat == null)
+            {
+                var newSeat = new FlightSeating
+                {
+                    FlightIdFK = ticket.FlightIdFK,
+                    TicketIdFK = ticket.Id,
+                    BookedSeat = true,
+                    SeatLocation = seatLocation
+                };
+
+                _AirLineDBContext.FlightSeatings.Add(newSeat);
+            }else {
+                // Seat exists but is not booked, update the seat
+                existingSeat.BookedSeat = true;
+                existingSeat.TicketIdFK = ticket.Id;
+            }
+
             _AirLineDBContext.Tickets.Add(ticket);
+            // Save changes to the database
             _AirLineDBContext.SaveChanges();
+
         }
 
         public void Cancel(Guid id)

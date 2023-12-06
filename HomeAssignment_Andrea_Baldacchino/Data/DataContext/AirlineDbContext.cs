@@ -22,7 +22,7 @@ namespace Data.DataContext
         //Representation of the Flight and Ticket tables
         public DbSet<Flight> Flights { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
-        public DbSet<FlightSeating> flightSeatings { get; set; }
+        public DbSet<FlightSeating> FlightSeatings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
