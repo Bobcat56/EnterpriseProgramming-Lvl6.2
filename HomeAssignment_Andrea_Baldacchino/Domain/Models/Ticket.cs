@@ -22,7 +22,7 @@ namespace Domain.Models
         public virtual Flight Flight { get; set; } //Navigational Property
         public string? Passport { get; set; }
         public double PricePaid { get; set; }
-        public Boolean Canelled { get; set; }
+        public Boolean Cancelled { get; set; }
 
     }
 }

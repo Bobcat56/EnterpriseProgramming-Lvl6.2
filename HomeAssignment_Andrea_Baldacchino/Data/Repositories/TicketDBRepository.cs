@@ -83,7 +83,7 @@ namespace Data.Repositories
             if (CanlledTicket != null)
             {
                 //Mark the ticket as cancelled
-                CanlledTicket.Canelled = true;
+                CanlledTicket.Cancelled = true;
 
                 //Expression means: Find the first that matches: TicketIdFK from table FligthSeating
                 var releaseSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault

@@ -21,7 +21,7 @@ namespace Presentation
                 .AddEntityFrameworkStores<AirlineDbContext>();
             builder.Services.AddControllersWithViews();
 
-
+            //Initializing the DI
             builder.Services.AddScoped(typeof(TicketDBRepository));
             builder.Services.AddScoped(typeof(FlightDbRepository));
 

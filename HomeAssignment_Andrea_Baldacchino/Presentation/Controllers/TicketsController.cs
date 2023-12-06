@@ -1,6 +1,7 @@
 ﻿using Data.Repositories;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Presentation.Models.ViewModels;
 
 namespace Presentation.Controllers
@@ -60,6 +61,14 @@ namespace Presentation.Controllers
              *      c.) Flight must NOT be cancelled
              *      b.) Flight must NOT be in the past
              *      c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice */
+            _ticketDBRepository.Book(new Ticket()
+            {
+                Row = myModel.Row,
+                Column = myModel.Column,
+                FlightIdFK = myModel.FlightIdFK,
+                PricePaid = myModel.PricePaid,
+                Cancelled = false
+            }) ;
 
             return View(myModel);
         }
