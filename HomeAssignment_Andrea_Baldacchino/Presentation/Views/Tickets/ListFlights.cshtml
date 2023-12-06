@@ -13,7 +13,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Id)
+                @Html.DisplayNameFor(model => model.CountryFrom)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CountryTo)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.AvailableSeats)
@@ -25,12 +28,6 @@
                 @Html.DisplayNameFor(model => model.ArrivalDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.CountryFrom)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CountryTo)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.RetailPrice)
             </th>
             <th></th>
@@ -40,7 +37,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Id)
+                @Html.DisplayFor(modelItem => item.CountryFrom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CountryTo)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AvailableSeats)
@@ -50,12 +50,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ArrivalDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CountryFrom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CountryTo)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.RetailPrice)

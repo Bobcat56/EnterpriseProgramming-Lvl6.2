@@ -23,6 +23,7 @@ namespace Domain.Models
         public string? CountryTo { get; set; }
         public double WholeSalePrice { get; set; }
         public double ComissionRate { get; set; }
+        public Boolean CancelledFlight { get; set; }
     
     }
 }

@@ -36,7 +36,7 @@ namespace Presentation.Controllers
                             ArrivalDate = flight.ArrivalDate,
                             CountryFrom = flight.CountryFrom,
                             CountryTo = flight.CountryTo,
-                            RetailPrice = flight.WholeSalePrice * (flight.ComissionRate / 100) //(comission% / 100) * wholesale price = Retail price
+                            RetailPrice = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)) //((comission% / 100) * wholesalePrice) + wholesalePrice = Retail price
                          };
 
             return View(output);
@@ -44,20 +44,25 @@ namespace Presentation.Controllers
 
         /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket. 
          * Requirements [2]*/
+        [HttpGet]
         public IActionResult BookFlight()
         {
-            /*
-                 Allows the user to book a flight after entering their details.
-                    a.) Flight must NOT be fully booked 
-                    c.) Flight must NOT be cancelled
-                    b.) Flight must NOT be in the past
-                    c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice
-            */
-
-            return View();
+            //Load the page with the empty fields
+            BookViewModel myModel = new BookViewModel(_flightDbRepository);
+            return View(myModel);
         }
 
+        [HttpPost]
+        public IActionResult BookFlight(BookViewModel myModel)
+        {
+            /* Allows the user to book a flight after entering their details.
+             *      a.) Flight must NOT be fully booked 
+             *      c.) Flight must NOT be cancelled
+             *      b.) Flight must NOT be in the past
+             *      c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice */
 
+            return View(myModel);
+        }
 
         /*Method (and View) which returns a list of Tickets (i.e. use GetTickets from Repository) which then returns a history list 
          *of tickets purchased by the logged in client (See Se3.3 for authentication) [1.5]

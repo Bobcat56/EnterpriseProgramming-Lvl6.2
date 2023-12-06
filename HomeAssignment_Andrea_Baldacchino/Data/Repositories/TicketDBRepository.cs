@@ -27,7 +27,7 @@ namespace Data.Repositories
                 try
                 {
                     var seatLocation = $"{ticket.Row},{ticket.Column}"; //FlightSeating will save the SeatLocation as a concatinated as follows: 6,3
-                    /*Lambda expression does as follows: Find the first entry that mathes the following:
+                    /*Lambda expression does as follows: Find the first entry that matches the following:
                      *FlidghtIdFk == The newly generated tickets FlightIdFK & the seatLocation == tickets newly generated seating*/
                     var existingSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
                         (fs => fs.FlightIdFK == ticket.FlightIdFK && fs.SeatLocation == seatLocation);

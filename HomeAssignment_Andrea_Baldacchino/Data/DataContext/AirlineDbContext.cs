@@ -33,5 +33,10 @@ namespace Data.DataContext
             builder.Entity<FlightSeating>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseLazyLoadingProxies();
+        }
+
     }//Close class
  }

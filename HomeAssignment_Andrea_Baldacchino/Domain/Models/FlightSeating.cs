@@ -13,12 +13,12 @@ namespace Domain.Models
 
         [ForeignKey("Flight")]
         public Guid FlightIdFK { get; set; }// Foreign Key to Flight
-        public Flight? Flight { get; set; } //Navigational Property
+        public virtual Flight? Flight { get; set; } //Navigational Property
 
         [ForeignKey("Ticket")]
         public Guid? TicketIdFK { get; set; }// Foreign Key to Tickets
         //This is made nullable as a ticket may not be assigned to a customer yet
-        public Ticket? Ticket { get; set; } //Navigational Property
+        public virtual Ticket? Ticket { get; set; } //Navigational Property
 
         public bool BookedSeat { get; set; }
         public string? SeatLocation { get; set; }

@@ -15,11 +15,11 @@ namespace Domain.Models
         [Key]
         public Guid Id { get; set; }
         public int Row { get; set; }
-        public char Column { get; set; }
+        public int Column { get; set; }
 
         [ForeignKey("Flight")]
         public Guid FlightIdFK { get; set; }// Foreign Key
-        public Flight Flight { get; set; } //Navigational Property
+        public virtual Flight Flight { get; set; } //Navigational Property
         public string? Passport { get; set; }
         public double PricePaid { get; set; }
         public Boolean Canelled { get; set; }
