@@ -26,9 +26,9 @@ namespace Data.Repositories
             {
                 try
                 {
-                    var seatLocation = $"{ticket.Row},{ticket.Column}"; //FlightSeating will save the SeatLocation as a concatinated as follows: 6,3
-                    /*Lambda expression does as follows: Find the first entry that matches the following:
-                     *FlidghtIdFk == The newly generated tickets FlightIdFK & the seatLocation == tickets newly generated seating*/
+                    var seatLocation = $"{ticket.Row},{ticket.Column}"; //FlightSeating will save the SeatLocation as a concatinated string as follows: 6,3
+                    /*Lambda expression does the following: Find the first entry that matches the:
+                      FlidghtIdFk == The newly generated tickets FlightIdFK & the seatLocation == tickets newly generated seating*/
                     var existingSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
                         (fs => fs.FlightIdFK == ticket.FlightIdFK && fs.SeatLocation == seatLocation);
 
@@ -65,7 +65,7 @@ namespace Data.Repositories
                     _AirLineDBContext.SaveChanges();
 
                     transaction.Commit();
-                }catch (Exception ex) { //This way, no errors will effect the database
+                }catch (Exception) { //This way, no errors will effect the database
                     transaction.Rollback();
                     throw;
                 }//Close Try Catch
@@ -74,45 +74,74 @@ namespace Data.Repositories
 
         public void Cancel(Guid id)
         {
-            // A method which allows the booked ticket to be cancelled and not deleted.
-            // Once cancelled someone else can book the released seat again[1]
-            var CanlledTicket = _AirLineDBContext.Tickets.FirstOrDefault
-                (t => t.Id == id);
-
-            //Validation to check if ticket exists
-            if (CanlledTicket != null)
+            using (var transaction = _AirLineDBContext.Database.BeginTransaction())
             {
-                //Mark the ticket as cancelled
-                CanlledTicket.Cancelled = true;
-
-                //Expression means: Find the first that matches: TicketIdFK from table FligthSeating
-                var releaseSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
-                    (fs => fs.TicketIdFK == id);                
-
-                if (releaseSeat != null)
+                try
                 {
-                    //Remove the connection between this ticket and the seat, and free up the seat
-                    releaseSeat.TicketIdFK = null;
-                    releaseSeat.BookedSeat = false;
+                    // A method which allows the booked ticket to be cancelled and not deleted.
+                    // Once cancelled someone else can book the released seat again[1]
+                    var cancelledTicket = _AirLineDBContext.Tickets.FirstOrDefault
+                        (t => t.Id == id);
 
-                    var availableSeating = _AirLineDBContext.Flights.FirstOrDefault
-                        (f => f.Id == id);
-                    availableSeating.AvailableSeats++;
-                }
-                else {
-                    throw new InvalidOperationException("Error: Seat not found");
-                }
+                    //Validation to check if ticket exists
+                    if (cancelledTicket != null)
+                    {
 
-                    _AirLineDBContext.SaveChanges();
-            }else {
-                throw new InvalidOperationException("This ticket does not exist");
-            }
-        }
+                        //Mark the ticket as cancelled
+                        cancelledTicket.Cancelled = true;
+
+                        //Expression means: Find the first that matches: TicketIdFK from table FligthSeating
+                        var releaseSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
+                            (fs => fs.TicketIdFK == id);
+
+                        if (releaseSeat != null)
+                        {
+
+                            //Remove the connection between this ticket and the seat, and free up the seat
+                            releaseSeat.TicketIdFK = null;
+                            releaseSeat.BookedSeat = false;
+
+                            //Get the Flight Id by getting the FK from the ticket
+                            var flightId = cancelledTicket.FlightIdFK;
+
+                            var availableSeating = _AirLineDBContext.Flights.FirstOrDefault
+                                (f => f.Id == flightId);
+
+                            if (availableSeating != null)
+                            {
+                                availableSeating.AvailableSeats++;
+                            }
+                            else //If FLight was not found
+                            {
+                                throw new InvalidOperationException("Error: Couldn't release seat");
+                            }
+
+                        }
+                        else //If Flight Seating was not found
+                        {
+                            throw new InvalidOperationException("Error: Seat not found");
+                        }
+
+                        _AirLineDBContext.SaveChanges();
+                        transaction.Commit();
+                    }
+                    else //If ticket was not found 
+                    {
+                        throw new InvalidOperationException("This ticket does not exist");
+                    }
+                }catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    throw;
+                }//Close Try Catch
+            }//Close transaction
+        }//Close Close()
 
         public IQueryable<Ticket> GetTickets(Guid id)
         {
-            // A method which returns all the tickets for a flight selected [1]
+            // A method which returns all the tickets for a flight selected
             return _AirLineDBContext.Tickets.Where(ticket => ticket.Id == id);
-        }
-    }
-}
+        }//Close GetTickets()
+
+    }//Close Class TicketDBRepository
+}//Close NameSpace
