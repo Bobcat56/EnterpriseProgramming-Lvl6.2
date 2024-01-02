@@ -1,14 +1,11 @@
 ﻿@model IEnumerable<Presentation.Models.ViewModels.ListFlightViewModel>
 
 @{
-    ViewData["Title"] = "ListFlights";
+    ViewData["Title"] = "Flight Listing";
 }
 
 <h1>ListFlights</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -19,13 +16,13 @@
                 @Html.DisplayNameFor(model => model.CountryTo)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AvailableSeats)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.DepartureDate)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ArrivalDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.AvailableSeats)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.RetailPrice)
@@ -43,21 +40,26 @@
                 @Html.DisplayFor(modelItem => item.CountryTo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.AvailableSeats)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.DepartureDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ArrivalDate)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.AvailableSeats)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.RetailPrice)
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @if (item.CanBook)
+                {
+                    @Html.ActionLink("Book", "BookFlight", new { id = item.Id })
+                } 
+                else
+                {
+                    <span> Fully Booked!</span>
+                }
             </td>
         </tr>
 }

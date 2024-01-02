@@ -129,7 +129,7 @@ namespace Data.Repositories
                     {
                         throw new InvalidOperationException("This ticket does not exist");
                     }
-                }catch (Exception ex)
+                }catch
                 {
                     transaction.Rollback();
                     throw;
