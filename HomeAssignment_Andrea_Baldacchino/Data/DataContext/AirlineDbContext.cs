@@ -29,7 +29,6 @@ namespace Data.DataContext
             base.OnModelCreating(builder);
             //Set the ID's to auto generate a GUID
             builder.Entity<Flight>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
-            builder.Entity<Ticket>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
             builder.Entity<FlightSeating>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
         }
 

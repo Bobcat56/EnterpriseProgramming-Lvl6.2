@@ -57,21 +57,22 @@ namespace Presentation.Controllers
              *      b.) Flight must NOT be in the past
              *      c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice */
             if (flight == null || flight.AvailableSeats <= 0 || flight.CancelledFlight || flight.DepartureDate <= DateTime.Now) 
-            { 
-                //REMINDER: CHANGE TO BRING UP TOAST "Error: Can't book flight"
-                return RedirectToAction("ErrorPage");
+            {
+                TempData["errorMsg"] = "Error: Can't book flight";
+                return RedirectToAction("ListFlights");
             }
-
-            //Load the page with the empty fields
-            BookViewModel myModel = new BookViewModel(_flightDbRepository);
-            /*
+            //ViewBags helps pass data to the view
+            ViewBag.MaxRows = flight.Rows;
+            ViewBag.MaxColumns = flight.Columns;
+            
+            //Prefill the price and allocate the FK
             var model = new BookViewModel
             {
-                FlightIdFK = flightId,
-                PricePaid = retailPrice // Automatically fill in the PricePaid with the calculated retail price
+                FlightIdFK = flight.Id,
+                PricePaid = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)) // Automatically fill in the PricePaid with the calculated retail price
             };
-            */
-            return View(myModel);
+            
+            return View(model);
         }
 
         [HttpPost]

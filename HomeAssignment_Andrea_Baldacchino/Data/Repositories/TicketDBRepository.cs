@@ -26,9 +26,12 @@ namespace Data.Repositories
             {
                 try
                 {
+                    //Ticket Id has to be created before due to FlightSeating being created in this code
+                    ticket.Id = Guid.NewGuid();
+
                     var seatLocation = $"{ticket.Row},{ticket.Column}"; //FlightSeating will save the SeatLocation as a concatinated string as follows: 6,3
                     /*Lambda expression does the following: Find the first entry that matches the:
-                      FlidghtIdFk == The newly generated tickets FlightIdFK & the seatLocation == tickets newly generated seating*/
+                      FlidghtIdFk == The tickets FlightIdFK & the seatLocation == tickets newly generated seating*/
                     var existingSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
                         (fs => fs.FlightIdFK == ticket.FlightIdFK && fs.SeatLocation == seatLocation);
 
@@ -45,13 +48,16 @@ namespace Data.Repositories
                             SeatLocation = seatLocation
                         };
 
+                        //Adding the seat
                         _AirLineDBContext.FlightSeatings.Add(newSeat);
+
                     }else {// If seat exists but is not booked, update the seat
                         existingSeat.BookedSeat = true;
                         existingSeat.TicketIdFK = ticket.Id;
                     }
 
-                    var availableSeating = _AirLineDBContext.Flights.FirstOrDefault(f => f.Id == ticket.FlightIdFK);
+                    var availableSeating = _AirLineDBContext.Flights.FirstOrDefault
+                        (f => f.Id == ticket.FlightIdFK);
 
                     // Check if there are available seats before decrementing
                     if (availableSeating != null && availableSeating.AvailableSeats > 0) {
