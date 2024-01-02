@@ -47,21 +47,37 @@ namespace Presentation.Controllers
         /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket. 
          * Requirements [2]*/
         [HttpGet]
-        public IActionResult BookFlight()
+        public IActionResult BookFlight(Guid Id)
         {
+            //Fetch the flight the user wanted to book
+            var flight = _flightDbRepository.GetFlight(Id);
+
+            /*      a.) Flight must NOT be fully booked 
+             *      c.) Flight must NOT be cancelled
+             *      b.) Flight must NOT be in the past
+             *      c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice */
+            if (flight == null || flight.AvailableSeats <= 0 || flight.CancelledFlight || flight.DepartureDate <= DateTime.Now) 
+            { 
+                //REMINDER: CHANGE TO BRING UP TOAST "Error: Can't book flight"
+                return RedirectToAction("ErrorPage");
+            }
+
             //Load the page with the empty fields
             BookViewModel myModel = new BookViewModel(_flightDbRepository);
+            /*
+            var model = new BookViewModel
+            {
+                FlightIdFK = flightId,
+                PricePaid = retailPrice // Automatically fill in the PricePaid with the calculated retail price
+            };
+            */
             return View(myModel);
         }
 
         [HttpPost]
         public IActionResult BookFlight(BookViewModel myModel)
         {
-            /* Allows the user to book a flight after entering their details.
-             *      a.) Flight must NOT be fully booked 
-             *      c.) Flight must NOT be cancelled
-             *      b.) Flight must NOT be in the past
-             *      c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice */
+            // Allows the user to book a flight after entering their details.
             _ticketDBRepository.Book(new Ticket()
             {
                 Row = myModel.Row,
