@@ -1,8 +1,7 @@
 ﻿using Data.Repositories;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Hosting;
 using Presentation.Models.ViewModels;
 
 namespace Presentation.Controllers
@@ -11,8 +10,8 @@ namespace Presentation.Controllers
     {
         /*Task 4*/
         private FlightDbRepository _flightDbRepository;
-        private TicketDBRepository _ticketDBRepository;
-        public TicketsController(TicketDBRepository ticketDBRepository, FlightDbRepository flightDbRepository) { 
+        private ITicketRepository _ticketDBRepository;
+        public TicketsController(ITicketRepository ticketDBRepository, FlightDbRepository flightDbRepository) { 
             _ticketDBRepository = ticketDBRepository;
             _flightDbRepository = flightDbRepository;
         }

@@ -1,9 +1,10 @@
 ﻿using Data.DataContext;
+using Domain.Interfaces;
 using Domain.Models;
 
 namespace Data.Repositories
 {
-    public class TicketDBRepository
+    public class TicketDBRepository: ITicketRepository
     {
         private AirlineDbContext _AirLineDBContext;
 

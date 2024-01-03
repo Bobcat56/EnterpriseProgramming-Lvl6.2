@@ -1,5 +1,6 @@
 using Data.DataContext;
 using Data.Repositories;
+using Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,8 +23,10 @@ namespace Presentation
             builder.Services.AddControllersWithViews();
 
             //Initializing the DI
-            builder.Services.AddScoped(typeof(TicketDBRepository));
+            //builder.Services.AddScoped(typeof(TicketDBRepository));
+            builder.Services.AddScoped<ITicketRepository, TicketDBRepository>();
             builder.Services.AddScoped(typeof(FlightDbRepository));
+            
 
 
             var app = builder.Build();
