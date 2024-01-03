@@ -2,6 +2,7 @@
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Hosting;
 using Presentation.Models.ViewModels;
 
 namespace Presentation.Controllers
@@ -17,8 +18,7 @@ namespace Presentation.Controllers
         }
 
 
-        /* Method (and View) which returns and shows on page a list of Flights that one can choose with RETAIL prices displayed.
-         * Requirements [1.5] */
+        /* Method (and View) which returns and shows on page a list of Flights that one can choose with RETAIL prices displayed.*/
         public IActionResult ListFlights()
         {
             /* 
@@ -44,8 +44,7 @@ namespace Presentation.Controllers
             return View(output);
         }
 
-        /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket. 
-         * Requirements [2]*/
+        /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket.*/
         [HttpGet]
         public IActionResult BookFlight(Guid Id)
         {
@@ -83,9 +82,21 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
-        public IActionResult BookFlight(BookViewModel myModel)
+        public IActionResult BookFlight(BookViewModel myModel, [FromServices] IWebHostEnvironment host)
         {
-            if(ModelState.IsValid) { 
+
+            string fileName = Guid.NewGuid() + System.IO.Path.GetExtension(myModel.Passport.FileName);
+            string absolutePath = host.ContentRootPath +  @"\Data\Images\" + fileName;
+            string relativePath = @"/Images/" + fileName;
+
+            using (FileStream fs = new FileStream(absolutePath, FileMode.CreateNew))
+            {
+                myModel.Passport.CopyTo(fs);
+                fs.Flush();
+                fs.Close();
+            }
+
+            if (ModelState.IsValid) { 
                 // Allows the user to book a flight after entering their details.
                 _ticketDBRepository.Book(new Ticket()
                 {
@@ -93,11 +104,13 @@ namespace Presentation.Controllers
                     Column = myModel.Column,
                     FlightIdFK = myModel.FlightIdFK,
                     PricePaid = myModel.PricePaid,
+                    Passport = relativePath,
                     Cancelled = false
                 }) ;
-
+                TempData["msg"] = "Flight successfully booked";
                 return RedirectToAction("ListFlights");
             }
+            TempData["errorMsg"] = "Error encountered while booking flight";
             //If it encounters an error
             return View(myModel);
         }

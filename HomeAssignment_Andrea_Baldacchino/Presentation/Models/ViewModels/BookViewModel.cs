@@ -12,7 +12,8 @@ namespace Presentation.Models.ViewModels
         public int Row { get; set; }
         public int Column { get; set; }
         public Guid FlightIdFK { get; set; }// Foreign Key
-        public string? Passport { get; set; }
+        //public string? Passport { get; set; }
+        public IFormFile Passport {  get; set; }
         [DisplayName("Price")]
         public double PricePaid { get; set; }
 
