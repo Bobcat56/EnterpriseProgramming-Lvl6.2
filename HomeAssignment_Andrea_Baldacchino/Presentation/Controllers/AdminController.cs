@@ -21,7 +21,7 @@ namespace Presentation.Controllers
         public IActionResult ListAllFlights()
         {
 
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
+
             if (User.Identity.IsAuthenticated == false)
             {
                 //Can make a toast which says "Only logged in users can view history of purchased tickets"
@@ -31,7 +31,6 @@ namespace Presentation.Controllers
                 return RedirectToAction("Index", "Home");
                 //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying error)
             }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             IQueryable<Flight> list = _flightDbRepository.GetFlights();
 
@@ -51,8 +50,6 @@ namespace Presentation.Controllers
 
         public IActionResult ListAllTickets(Guid id) 
         {
-
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
             if (User.Identity.IsAuthenticated == false)
             {
                 //Can make a toast which says "Only logged in users can view history of purchased tickets"
@@ -62,7 +59,6 @@ namespace Presentation.Controllers
                 return RedirectToAction("Index", "Home");
                 //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying error)
             }
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
 
             IQueryable<Ticket> ticketList = _ticketDBRepository.GetTickets(id);
 

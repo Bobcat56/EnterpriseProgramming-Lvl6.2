@@ -46,18 +46,13 @@
                 @Html.DisplayFor(modelItem => item.Column)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Passport)
+               <img src="@item.Passport" style="width:100px; height:auto;"/>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.PricePaid)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Cancelled)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>
 }

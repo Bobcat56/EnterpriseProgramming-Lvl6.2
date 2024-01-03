@@ -82,6 +82,7 @@ namespace Presentation.Controllers
         }
 
         [HttpPost]
+        //IWebHostEnviroment used with Method Injection
         public IActionResult BookFlight(BookViewModel myModel, [FromServices] IWebHostEnvironment host)
         {
 
