@@ -66,10 +66,17 @@ namespace Presentation.Controllers
             ViewBag.MaxColumns = flight.Columns;
             
             //Prefill the price and allocate the FK
-            var model = new BookViewModel
+            BookViewModel model = new BookViewModel()
             {
+                //Ticket details
                 FlightIdFK = flight.Id,
-                PricePaid = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)) // Automatically fill in the PricePaid with the calculated retail price
+                PricePaid = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), // Automatically fill in the PricePaid with the calculated retail price
+
+                //Flight Details
+                CountryFrom = flight.CountryFrom,
+                CountryTo = flight.CountryTo,
+                DepartureDate = flight.DepartureDate,
+                ArrivalDate = flight.ArrivalDate
             };
             
             return View(model);
@@ -78,16 +85,20 @@ namespace Presentation.Controllers
         [HttpPost]
         public IActionResult BookFlight(BookViewModel myModel)
         {
-            // Allows the user to book a flight after entering their details.
-            _ticketDBRepository.Book(new Ticket()
-            {
-                Row = myModel.Row,
-                Column = myModel.Column,
-                FlightIdFK = myModel.FlightIdFK,
-                PricePaid = myModel.PricePaid,
-                Cancelled = false
-            }) ;
+            if(ModelState.IsValid) { 
+                // Allows the user to book a flight after entering their details.
+                _ticketDBRepository.Book(new Ticket()
+                {
+                    Row = myModel.Row,
+                    Column = myModel.Column,
+                    FlightIdFK = myModel.FlightIdFK,
+                    PricePaid = myModel.PricePaid,
+                    Cancelled = false
+                }) ;
 
+                return RedirectToAction("ListFlights");
+            }
+            //If it encounters an error
             return View(myModel);
         }
 

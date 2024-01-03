@@ -40,10 +40,10 @@
                 @Html.DisplayFor(modelItem => item.CountryTo)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DepartureDate)
+                @item.DepartureDate.ToString("MM/dd/yyyy HH:mm")
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ArrivalDate)
+                @item.ArrivalDate.ToString("MM/dd/yyyy HH:mm")
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.AvailableSeats)

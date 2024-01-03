@@ -10,6 +10,14 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="BookFlight">
+            <!-- Displaying the flight details -->
+            <div class="flight-details">
+                <h3>Flight Details:</h3>
+                <p>From: @Model.CountryFrom</p>
+                <p>To: @Model.CountryTo</p>
+                <p>Departure: @Model.DepartureDate.ToString("MM/dd/yyyy HH:mm")</p>
+                <p>Arrival: @Model.ArrivalDate.ToString("MM/dd/yyyy HH:mm")</p>
+            </div>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Row" class="control-label"></label>
