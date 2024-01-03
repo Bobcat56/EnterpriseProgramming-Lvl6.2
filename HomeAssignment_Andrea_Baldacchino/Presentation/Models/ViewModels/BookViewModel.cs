@@ -22,6 +22,9 @@ namespace Presentation.Models.ViewModels
         public string? CountryFrom { get; set; }
         [DisplayName("Country To")]
         public string? CountryTo { get; set; }
+
+        //Icons
+        public string? OutlineIcon { get; set; }
     }
 }
 

@@ -46,8 +46,10 @@ namespace Presentation.Controllers
 
         /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket.*/
         [HttpGet]
-        public IActionResult BookFlight(Guid Id)
+        public IActionResult BookFlight(Guid Id, [FromServices] IWebHostEnvironment host)
         {
+            string seatIcon = Path.Combine(host.WebRootPath, "icons", "armchair.png");
+
             //Fetch the flight the user wanted to book
             var flight = _flightDbRepository.GetFlight(Id);
 
@@ -75,7 +77,8 @@ namespace Presentation.Controllers
                 CountryFrom = flight.CountryFrom,
                 CountryTo = flight.CountryTo,
                 DepartureDate = flight.DepartureDate,
-                ArrivalDate = flight.ArrivalDate
+                ArrivalDate = flight.ArrivalDate,
+                OutlineIcon = seatIcon
             };
             
             return View(model);
@@ -88,7 +91,7 @@ namespace Presentation.Controllers
 
             if (!ModelState.IsValid)
             {
-                TempData["errorMsg"] = "Error: Please provide the requeted details.";
+                TempData["errorMsg"] = "Error: Please provide the requeted details";
                 return View(myModel);
             }
 

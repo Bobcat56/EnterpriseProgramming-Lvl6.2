@@ -35,6 +35,27 @@
                 </div>
             </div>
 
+            @*
+            <!-- Hidden fields for the row and column -->
+            <input type="hidden" id="selectedRow" name="Row" value="" />
+            <input type="hidden" id="selectedColumn" name="Column" value="" />
+
+            <!--Dynamic display of seats-->
+            <@for (int row = 1; row <= ViewBag.MaxRows; row++)
+            {
+                <div class="row">
+                    @for (int column = 1; column <= ViewBag.MaxColumns; column++)
+                    {
+                        <div class="col text-center">
+                            <button type="button" class="seat-icon" data-row="@row" data-column="@column">
+                                <img src="@Model.OutlineIcon" alt="Seat Icon"/>
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+            *@
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Row" class="control-label"></label>
@@ -52,7 +73,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="PricePaid" class="control-label"></label>
-                <input asp-for="PricePaid" class="form-control" readonly/> 
+                <input asp-for="PricePaid" class="form-control" readonly value="€@Model.PricePaid.ToString("F2")" />
                 <!--Making it readonly so the user cannot alter the price-->
                 <span asp-validation-for="PricePaid" class="text-danger"></span>
             </div>
