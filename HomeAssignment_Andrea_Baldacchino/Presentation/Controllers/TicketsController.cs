@@ -85,35 +85,57 @@ namespace Presentation.Controllers
         public IActionResult BookFlight(BookViewModel myModel, [FromServices] IWebHostEnvironment host)
         {
 
-            string fileName = Guid.NewGuid() + System.IO.Path.GetExtension(myModel.Passport.FileName);
-            string absolutePath = host.ContentRootPath +  @"\Data\Images\" + fileName;
-            string relativePath = @"/Images/" + fileName;
-
-            using (FileStream fs = new FileStream(absolutePath, FileMode.CreateNew))
+            if (!ModelState.IsValid)
             {
-                myModel.Passport.CopyTo(fs);
-                fs.Flush();
-                fs.Close();
+                TempData["errorMsg"] = "Error: Please provide the requeted details.";
+                return View(myModel);
             }
 
-            if (ModelState.IsValid) { 
-                // Allows the user to book a flight after entering their details.
-                _ticketDBRepository.Book(new Ticket()
+            if (myModel.Passport?.Length > 0)
+            {
+                string fileName = Guid.NewGuid() + System.IO.Path.GetExtension(myModel.Passport.FileName);
+                //string absolutePath = host.ContentRootPath + @"\Data\Images\" + fileName;
+                string absolutePath = Path.Combine(host.ContentRootPath, "Data", "Images", fileName);
+                string relativePath = @"/Images/" + fileName;
+
+                try
                 {
-                    Row = myModel.Row,
-                    Column = myModel.Column,
-                    FlightIdFK = myModel.FlightIdFK,
-                    PricePaid = myModel.PricePaid,
-                    Passport = relativePath,
-                    Cancelled = false
-                }) ;
-                TempData["msg"] = "Flight successfully booked";
-                return RedirectToAction("ListFlights");
+                    using (FileStream fs = new FileStream(absolutePath, FileMode.CreateNew))
+                    {
+                        myModel.Passport.CopyTo(fs);
+                        fs.Flush();
+                        fs.Close();
+                    }
+
+                    _ticketDBRepository.Book(new Ticket()
+                    {
+                        Row = myModel.Row,
+                        Column = myModel.Column,
+                        FlightIdFK = myModel.FlightIdFK,
+                        PricePaid = myModel.PricePaid,
+                        Passport = relativePath,
+                        Cancelled = false
+                    });
+                    TempData["msg"] = "Flight successfully booked";
+                    return RedirectToAction("ListFlights");
+                    
+                } 
+                catch (Exception ex)
+                {
+                    if (System.IO.File.Exists(absolutePath))
+                    {
+                        System.IO.File.Delete(absolutePath);
+                    }
+                    TempData["errorMsg"] = "Error: The seat you selected has already been booked.";
+                    return View(myModel);
+                }
             }
-            TempData["errorMsg"] = "Error encountered while booking flight";
-            //If it encounters an error
-            return View(myModel);
-        }
+            else
+            {
+                TempData["errorMsg"] = "Error: Please upload Passport Photo";
+                return View(myModel);
+            }
+        }//CLose POST BookFlight()
 
         /*Method (and View) which returns a list of Tickets (i.e. use GetTickets from Repository) which then returns a history list 
          *of tickets purchased by the logged in client (See Se3.3 for authentication) [1.5]
