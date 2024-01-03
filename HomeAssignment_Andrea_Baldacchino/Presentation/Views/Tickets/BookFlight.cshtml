@@ -37,18 +37,18 @@
 
             @*
             <!-- Hidden fields for the row and column -->
-            <input type="hidden" id="selectedRow" name="Row" value="" />
-            <input type="hidden" id="selectedColumn" name="Column" value="" />
+            <input type="hidden" id="Row" name="Row"/>
+            <input type="hidden" id="Column" name="Column"/>
 
-            <!--Dynamic display of seats-->
+            <!--Dynamic display of seats-->+
             <@for (int row = 1; row <= ViewBag.MaxRows; row++)
             {
                 <div class="row">
                     @for (int column = 1; column <= ViewBag.MaxColumns; column++)
                     {
                         <div class="col text-center">
-                            <button type="button" class="seat-icon" data-row="@row" data-column="@column">
-                                <img src="@Model.OutlineIcon" alt="Seat Icon"/>
+                            <button type="button" class="seat-icon" data-row="@ow" data-column="@column">
+                                <img src="@Model.OutlineIcon" style="width:50px; height:50px;"/>
                             </button>
                         </div>
                     }
