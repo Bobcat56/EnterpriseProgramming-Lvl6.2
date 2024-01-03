@@ -39,11 +39,16 @@
             
             @if (TempData["errorMsg"] != null)
             {
-                <div class="alert alert-dark" role="alert">
+                <div class="alert alert-danger" role="alert">
                     @TempData["errorMsg"].ToString();
                 </div>
-            }<!--If data location "TempData" is not empty, create a toast of the error
-                 Warning states "Possible Null reference", but we are checking for null before -->
+            }
+            @if (TempData["msg"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @TempData["msg"].ToString();
+                </div>
+            }
             
             @RenderBody()
         </main>

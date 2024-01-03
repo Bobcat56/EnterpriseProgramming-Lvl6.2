@@ -1,10 +1,5 @@
 ﻿using Data.DataContext;
 using Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Repositories
 {
@@ -146,7 +141,7 @@ namespace Data.Repositories
         public IQueryable<Ticket> GetTickets(Guid id)
         {
             // A method which returns all the tickets for a flight selected
-            return _AirLineDBContext.Tickets.Where(ticket => ticket.Id == id);
+            return _AirLineDBContext.Tickets.Where(ticket => ticket.FlightIdFK == id);
         }//Close GetTickets()
 
     }//Close Class TicketDBRepository

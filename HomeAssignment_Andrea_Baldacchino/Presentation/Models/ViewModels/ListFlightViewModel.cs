@@ -1,6 +1,4 @@
-﻿
-
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Presentation.Models.ViewModels

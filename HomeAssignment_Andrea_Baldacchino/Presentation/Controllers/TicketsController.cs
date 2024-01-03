@@ -29,17 +29,17 @@ namespace Presentation.Controllers
             IQueryable<Flight> list = _flightDbRepository.GetFlights().Where(x=> x.DepartureDate > DateTime.Now);
 
             var output = from flight in list
-                         select new ListFlightViewModel()
-                         {
-                            Id = flight.Id,
-                            AvailableSeats = flight.AvailableSeats,
-                            DepartureDate = flight.DepartureDate,
-                            ArrivalDate = flight.ArrivalDate,
-                            CountryFrom = flight.CountryFrom,
-                            CountryTo = flight.CountryTo,
-                            RetailPrice = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), //((comission% / 100) * wholesalePrice) + wholesalePrice = Retail price
-                            CanBook = flight.AvailableSeats > 0 //To remove the ability to book a fully booked flight
-                         };
+                select new ListFlightViewModel()
+                {
+                    Id = flight.Id,
+                    AvailableSeats = flight.AvailableSeats,
+                    DepartureDate = flight.DepartureDate,
+                    ArrivalDate = flight.ArrivalDate,
+                    CountryFrom = flight.CountryFrom,
+                    CountryTo = flight.CountryTo,
+                    RetailPrice = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), //((comission% / 100) * wholesalePrice) + wholesalePrice = Retail price
+                    CanBook = flight.AvailableSeats > 0 //To remove the ability to book a fully booked flight
+                };
 
             return View(output);
         }
@@ -120,7 +120,7 @@ namespace Presentation.Controllers
                     return RedirectToAction("ListFlights");
                     
                 } 
-                catch (Exception ex)
+                catch
                 {
                     if (System.IO.File.Exists(absolutePath))
                     {
@@ -157,11 +157,7 @@ namespace Presentation.Controllers
             }
 
             return View();
-        }
+        }//Close ListTicketHistory()
 
-
-
-
-
-    }
-}
+    }//Close Controller
+}//Close Namespace

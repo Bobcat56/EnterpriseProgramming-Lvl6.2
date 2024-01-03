@@ -1,8 +1,4 @@
-﻿using Data.Repositories;
-using Domain.Models;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel;
 
 namespace Presentation.Models.ViewModels
 {
