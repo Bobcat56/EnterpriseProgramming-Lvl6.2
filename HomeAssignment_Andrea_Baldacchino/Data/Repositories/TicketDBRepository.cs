@@ -25,15 +25,21 @@ namespace Data.Repositories
                     //Ticket Id has to be created before due to FlightSeating being created in this code
                     ticket.Id = Guid.NewGuid();
 
-                    var seatLocation = $"{ticket.Row},{ticket.Column}"; //FlightSeating will save the SeatLocation as a concatinated string as follows: 6,3
-                    /*Lambda expression does the following: Find the first entry that matches the:
-                      FlidghtIdFk == The tickets FlightIdFK & the seatLocation == tickets newly generated seating*/
+
+
+                    var seatLocation = $"{ticket.Row},{ticket.Column}";
+                    /*Lambda expression: Find the first entry that matches
+                      FlidghtIdFk == The tickets FlightIdFK & the seatLocation == tickets seating*/
+
                     var existingSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
                         (fs => fs.FlightIdFK == ticket.FlightIdFK && fs.SeatLocation == seatLocation);
 
+                    /* Old Double booking Validation
                     if (existingSeat != null && existingSeat.BookedSeat == true) {
                         throw new InvalidOperationException("Seat is already booked.");
                     }
+                    */
+
 
                     if (existingSeat == null) {
                         var newSeat = new FlightSeating
@@ -88,50 +94,43 @@ namespace Data.Repositories
                     //Validation to check if ticket exists
                     if (cancelledTicket != null)
                     {
+                        throw new InvalidOperationException("This ticket does not exist");
+                    }
 
-                        //Mark the ticket as cancelled
-                        cancelledTicket.Cancelled = true;
+                    //Mark the ticket as cancelled
+                    cancelledTicket.Cancelled = true;
 
-                        //Expression means: Find the first that matches: TicketIdFK from table FligthSeating
-                        var releaseSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
-                            (fs => fs.TicketIdFK == id);
+                    //Expression means: Find the first that matches: TicketIdFK from table FligthSeating
+                    var releaseSeat = _AirLineDBContext.FlightSeatings.FirstOrDefault
+                        (fs => fs.TicketIdFK == id);
 
-                        if (releaseSeat != null)
-                        {
+                    if (releaseSeat == null)
+                    {
+                        throw new InvalidOperationException("Error: Seat not found");
+                    }
 
-                            //Remove the connection between this ticket and the seat, and free up the seat
-                            releaseSeat.TicketIdFK = null;
-                            releaseSeat.BookedSeat = false;
+                    //Remove the connection between this ticket and the seat, and free up the seat
+                    releaseSeat.TicketIdFK = null;
+                    releaseSeat.BookedSeat = false;
 
-                            //Get the Flight Id by getting the FK from the ticket
-                            var flightId = cancelledTicket.FlightIdFK;
+                    //Get the Flight Id by getting the FK from the ticket
+                    var flightId = cancelledTicket.FlightIdFK;
 
-                            var availableSeating = _AirLineDBContext.Flights.FirstOrDefault
-                                (f => f.Id == flightId);
+                    var availableSeating = _AirLineDBContext.Flights.FirstOrDefault
+                        (f => f.Id == flightId);
 
-                            if (availableSeating != null)
-                            {
-                                availableSeating.AvailableSeats++;
-                            }
-                            else //If FLight was not found
-                            {
-                                throw new InvalidOperationException("Error: Couldn't release seat");
-                            }
-
-                        }
-                        else //If Flight Seating was not found
-                        {
-                            throw new InvalidOperationException("Error: Seat not found");
-                        }
+                    if (availableSeating != null)
+                    {
+                        availableSeating.AvailableSeats++;
+                    }
+                    else //If FLight was not found
+                    {
+                        throw new InvalidOperationException("Error: Couldn't release seat");
+                    }
 
                         _AirLineDBContext.SaveChanges();
                         transaction.Commit();
-                    }
-                    else //If ticket was not found 
-                    {
-                        throw new InvalidOperationException("This ticket does not exist");
-                    }
-                }catch
+                }catch (Exception)
                 {
                     transaction.Rollback();
                     throw;
@@ -145,5 +144,11 @@ namespace Data.Repositories
             return _AirLineDBContext.Tickets.Where(ticket => ticket.FlightIdFK == id);
         }//Close GetTickets()
 
+
+        public bool IsSeatAlreadyBooked(Ticket ticket)
+        {
+            var seatLocation = $"{ticket.Row},{ticket.Column}";
+            return _AirLineDBContext.FlightSeatings.Any(fs => fs.FlightIdFK == ticket.FlightIdFK && fs.SeatLocation == seatLocation && fs.BookedSeat);
+        }
     }//Close Class TicketDBRepository
 }//Close NameSpace

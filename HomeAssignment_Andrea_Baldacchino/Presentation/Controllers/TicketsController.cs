@@ -25,119 +25,143 @@ namespace Presentation.Controllers
                     a.) Fully booked flights CAN NOT be selected, BUT still displayed 
                     b.) If Departure date is in the past, DO NOT DISPLAY
             */
-            IQueryable<Flight> list = _flightDbRepository.GetFlights().Where(x=> x.DepartureDate > DateTime.Now);
+            try
+            {
+                IQueryable<Flight> list = _flightDbRepository.GetFlights().Where(x => x.DepartureDate > DateTime.Now);
 
-            var output = from flight in list
-                select new ListFlightViewModel()
-                {
-                    Id = flight.Id,
-                    AvailableSeats = flight.AvailableSeats,
-                    DepartureDate = flight.DepartureDate,
-                    ArrivalDate = flight.ArrivalDate,
-                    CountryFrom = flight.CountryFrom,
-                    CountryTo = flight.CountryTo,
-                    RetailPrice = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), //((comission% / 100) * wholesalePrice) + wholesalePrice = Retail price
-                    Cancelled = flight.CancelledFlight,
-                    CanBook = flight.AvailableSeats > 0 //To remove the ability to book a fully booked or cancelled flight
-                };
+                var output = from flight in list
+                             select new ListFlightViewModel()
+                             {
+                                 Id = flight.Id,
+                                 AvailableSeats = flight.AvailableSeats,
+                                 DepartureDate = flight.DepartureDate,
+                                 ArrivalDate = flight.ArrivalDate,
+                                 CountryFrom = flight.CountryFrom,
+                                 CountryTo = flight.CountryTo,
+                                 RetailPrice = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), //((comission% / 100) * wholesalePrice) + wholesalePrice = Retail price
+                                 Cancelled = flight.CancelledFlight,
+                                 CanBook = flight.AvailableSeats > 0 //To remove the ability to book a fully booked or cancelled flight
+                             };
 
-            return View(output);
+                return View(output);
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMsg"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         /* Method (and View) which allows the user to book a flight after entering the requested details to book a ticket.*/
         [HttpGet] //Method injection
         public IActionResult BookFlight(Guid Id, [FromServices] IWebHostEnvironment host)
         {
-            string seatIcon = Path.Combine(host.WebRootPath, "icons", "armchair.png");
-
-            //Fetch the flight the user wanted to book
-            var flight = _flightDbRepository.GetFlight(Id);
-
-            /*      a.) Flight must NOT be fully booked 
-             *      c.) Flight must NOT be cancelled
-             *      b.) Flight must NOT be in the past
-             *      c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice */
-            if (flight == null || flight.AvailableSeats <= 0 || flight.CancelledFlight || flight.DepartureDate <= DateTime.Now) 
+            try
             {
-                TempData["errorMsg"] = "Error: Can't book flight";
-                return RedirectToAction("ListFlights");
+                string seatIcon = Path.Combine(host.WebRootPath, "icons", "armchair.png");
+
+                //Fetch the flight the user wanted to book
+                var flight = _flightDbRepository.GetFlight(Id);
+
+                /*      a.) Flight must NOT be fully booked 
+                 *      c.) Flight must NOT be cancelled
+                 *      b.) Flight must NOT be in the past
+                 *      c.) PricePaid is filled in automatically after calculating commission on WholeSalePrice */
+                if (flight == null || flight.AvailableSeats <= 0 || flight.CancelledFlight || flight.DepartureDate <= DateTime.Now) 
+                {
+                    TempData["errorMsg"] = "Error: Can't book flight";
+                    return RedirectToAction("ListFlights");
+                }
+                //ViewBags helps pass data to the view
+                ViewBag.MaxRows = flight.Rows;
+                ViewBag.MaxColumns = flight.Columns;
+            
+                //Prefill the price and allocate the FK
+                BookViewModel model = new BookViewModel()
+                {
+                    //Ticket details
+                    FlightIdFK = flight.Id,
+                    PricePaid = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), // Automatically fill in the PricePaid with the calculated retail price
+
+                    //Flight Details
+                    CountryFrom = flight.CountryFrom,
+                    CountryTo = flight.CountryTo,
+                    DepartureDate = flight.DepartureDate,
+                    ArrivalDate = flight.ArrivalDate,   
+                    OutlineIcon = seatIcon
+                };
+            
+                return View(model);
             }
-            //ViewBags helps pass data to the view
-            ViewBag.MaxRows = flight.Rows;
-            ViewBag.MaxColumns = flight.Columns;
-            
-            //Prefill the price and allocate the FK
-            BookViewModel model = new BookViewModel()
+            catch (Exception ex)
             {
-                //Ticket details
-                FlightIdFK = flight.Id,
-                PricePaid = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), // Automatically fill in the PricePaid with the calculated retail price
-
-                //Flight Details
-                CountryFrom = flight.CountryFrom,
-                CountryTo = flight.CountryTo,
-                DepartureDate = flight.DepartureDate,
-                ArrivalDate = flight.ArrivalDate,   
-                OutlineIcon = seatIcon
-            };
-            
-            return View(model);
+                TempData["errorMsg"] = ex.Message;
+                return RedirectToAction("ListFlights", "Tickets");
+            }
         }
 
         [HttpPost]
         //IWebHostEnviroment used with Method Injection
         public IActionResult BookFlight(BookViewModel myModel, [FromServices] IWebHostEnvironment host)
         {
-
-            if (!ModelState.IsValid)
+            try
             {
-                TempData["errorMsg"] = "Error: Please provide the requeted details";
-                return View(myModel);
-            }
 
-            if (myModel.Passport?.Length > 0)
-            {
-                string fileName = Guid.NewGuid() + System.IO.Path.GetExtension(myModel.Passport.FileName);
-                //string absolutePath = host.ContentRootPath + @"\Data\Images\" + fileName;
-                string absolutePath = Path.Combine(host.ContentRootPath, "Data", "Images", fileName);
-                string relativePath = @"/Images/" + fileName;
-
-                try
+                if (!ModelState.IsValid)
                 {
-                    using (FileStream fs = new FileStream(absolutePath, FileMode.CreateNew))
-                    {
-                        myModel.Passport.CopyTo(fs);
-                        fs.Flush();
-                        fs.Close();
-                    }
+                    TempData["errorMsg"] = "Error: Please provide the requeted details";
+                    return View(myModel);
+                }
 
-                    _ticketDBRepository.Book(new Ticket()
-                    {
-                        Row = myModel.Row,
-                        Column = myModel.Column,
-                        FlightIdFK = myModel.FlightIdFK,
-                        PricePaid = myModel.PricePaid,
-                        Passport = relativePath,
-                        Cancelled = false
-                    });
-                    TempData["msg"] = "Flight successfully booked";
-                    return RedirectToAction("ListFlights");
-                    
-                } 
-                catch
+                if (myModel.Passport?.Length > 0)
                 {
-                    if (System.IO.File.Exists(absolutePath))
+                    string fileName = Guid.NewGuid() + System.IO.Path.GetExtension(myModel.Passport.FileName);
+                    //string absolutePath = host.ContentRootPath + @"\Data\Images\" + fileName;
+                    string absolutePath = Path.Combine(host.ContentRootPath, "Data", "Images", fileName);
+                    string relativePath = @"/Images/" + fileName;
+
+                    try
                     {
-                        System.IO.File.Delete(absolutePath);
+                        using (FileStream fs = new FileStream(absolutePath, FileMode.CreateNew))
+                        {
+                            myModel.Passport.CopyTo(fs);
+                            fs.Flush();
+                            fs.Close();
+                        }
+
+                        _ticketDBRepository.Book(new Ticket()
+                        {
+                            Row = myModel.Row,
+                            Column = myModel.Column,
+                            FlightIdFK = myModel.FlightIdFK,
+                            PricePaid = myModel.PricePaid,
+                            Passport = relativePath,
+                            Cancelled = false
+                        });
+                        TempData["msg"] = "Flight successfully booked";
+                        return RedirectToAction("ListFlights");
+
                     }
-                    TempData["errorMsg"] = "Error: The seat you selected has already been booked.";
+                    catch
+                    {
+                        if (System.IO.File.Exists(absolutePath))
+                        {
+                            System.IO.File.Delete(absolutePath);
+                        }
+                        TempData["errorMsg"] = "Error: The seat you selected has already been booked.";
+                        return View(myModel);
+                    }
+                }
+                else
+                {
+                    TempData["errorMsg"] = "Error: Please upload Passport Photo";
                     return View(myModel);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                TempData["errorMsg"] = "Error: Please upload Passport Photo";
-                return View(myModel);
+                TempData["errorMsg"] = ex.Message;
+                return RedirectToAction("ListFlights", "Tickets");
             }
         }//CLose POST BookFlight()
 

@@ -9,6 +9,11 @@ namespace Domain.Models
 {
     public class FlightSeating
     {
+        //Why did I do all this? :C 
+        //REMINDER: This is redundant, TO FIX AFTER ASSIGNMENTS DONE. 
+        //Book() from File repository just uses GET TICKETS... Which gets the tickets for a flight
+        //At the time of building the normal Repos, I didnt see that I could filter the tickets goten from it by row and col (Idk how)
+        
         public Guid Id { get; set; }
 
         [ForeignKey("Flight")]

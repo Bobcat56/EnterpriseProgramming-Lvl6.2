@@ -32,20 +32,28 @@ namespace Presentation.Controllers
                 //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying error)
             }
 
-            IQueryable<Flight> list = _flightDbRepository.GetFlights();
-
-            var output = from flight in list
-            select new ListFlightViewModel()
+            try
             {
-                Id = flight.Id,
-                DepartureDate = flight.DepartureDate,
-                ArrivalDate = flight.ArrivalDate,
-                CountryFrom = flight.CountryFrom,
-                CountryTo = flight.CountryTo
-            };
+                IQueryable<Flight> list = _flightDbRepository.GetFlights();
 
-            return View(output);
-        }
+                var output = from flight in list
+                             select new ListFlightViewModel()
+                             {
+                                 Id = flight.Id,
+                                 DepartureDate = flight.DepartureDate,
+                                 ArrivalDate = flight.ArrivalDate,
+                                 CountryFrom = flight.CountryFrom,
+                                 CountryTo = flight.CountryTo
+                             };
+
+                return View(output);
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMsg"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
+        }//Close ListAllFlights
 
 
         public IActionResult ListAllTickets(Guid id) 
@@ -60,28 +68,35 @@ namespace Presentation.Controllers
                 //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying error)
             }
 
-            IQueryable<Ticket> ticketList = _ticketDBRepository.GetTickets(id);
-
-            if (ticketList == null)
+            try
             {
-                TempData["msg"] = "There are no tickets booked for this flight";
-                return RedirectToAction("ListAllFlights");
-            }
+                IQueryable<Ticket> ticketList = _ticketDBRepository.GetTickets(id);
 
-            var model = from ticket in ticketList
-                select new AdminListAllTicketsViewModel()
+                if (ticketList == null)
                 {
-                    Id = ticket.Id,
-                    Row = ticket.Row,
-                    Column = ticket.Column,
-                    Passport = ticket.Passport,
-                    PricePaid = ticket.PricePaid,
-                    Cancelled = ticket.Cancelled
-                };
+                    TempData["msg"] = "There are no tickets booked for this flight";
+                    return RedirectToAction("ListAllFlights");
+                }
 
-            return View (model);
+                var model = from ticket in ticketList
+                            select new AdminListAllTicketsViewModel()
+                            {
+                                Id = ticket.Id,
+                                Row = ticket.Row,
+                                Column = ticket.Column,
+                                Passport = ticket.Passport,
+                                PricePaid = ticket.PricePaid,
+                                Cancelled = ticket.Cancelled
+                            };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMsg"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }//Close ListAllTickets()
         }
-        
 
     }//Close controller
 }

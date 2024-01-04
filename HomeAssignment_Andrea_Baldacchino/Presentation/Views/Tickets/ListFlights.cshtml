@@ -32,11 +32,11 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr class="@(item.Cancelled ? "cancelled" : "not-cancelled")">
+        <tr class="@(item.Cancelled ? "cancelled" : "not-cancelled" )">
             <td>
                 @Html.DisplayFor(modelItem => item.CountryFrom)
             </td>
-            <td>
+            <td>-
                 @Html.DisplayFor(modelItem => item.CountryTo)
             </td>
             <td>
