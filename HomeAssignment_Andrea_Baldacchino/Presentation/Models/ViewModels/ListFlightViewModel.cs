@@ -20,6 +20,7 @@ namespace Presentation.Models.ViewModels
         [DisplayName("Price")]
         [DisplayFormat(DataFormatString = "{0:F2}")]
         public double RetailPrice { get; set; }
+        public Boolean Cancelled { get; set; }
 
         public bool CanBook { get; set; }
 

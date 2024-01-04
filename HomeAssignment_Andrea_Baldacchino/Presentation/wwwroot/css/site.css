@@ -16,3 +16,12 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Flight.css */
+.cancelled {
+    background-color: #ffcccb;
+}
+
+.not-cancelled {
+    background-color: #90ee90;
+}

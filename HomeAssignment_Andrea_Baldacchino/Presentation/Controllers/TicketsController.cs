@@ -37,7 +37,8 @@ namespace Presentation.Controllers
                     CountryFrom = flight.CountryFrom,
                     CountryTo = flight.CountryTo,
                     RetailPrice = flight.WholeSalePrice + (flight.WholeSalePrice * (flight.ComissionRate / 100)), //((comission% / 100) * wholesalePrice) + wholesalePrice = Retail price
-                    CanBook = flight.AvailableSeats > 0 //To remove the ability to book a fully booked flight
+                    Cancelled = flight.CancelledFlight,
+                    CanBook = flight.AvailableSeats > 0 //To remove the ability to book a fully booked or cancelled flight
                 };
 
             return View(output);

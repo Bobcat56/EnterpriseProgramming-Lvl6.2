@@ -30,35 +30,39 @@ namespace Data.Repositories
 
         public IQueryable<Ticket> GetTickets(Guid id)
         {
-            if (File.Exists(_ticketFile))
+            if (!File.Exists(_ticketFile))
             {
-                try
-                {
-                    string allText = "";
-
-                    using (StreamReader sr = File.OpenText(_ticketFile))
-                    {
-                        allText = sr.ReadToEnd();
-                        sr.Close();
-
-                    }   
-                    
-                    if (string.IsNullOrEmpty(allText))
-                    {
-                        //return new List<Ticket>();
-                    }
-
-                    List<Ticket> listTickets = JsonSerializer.Deserialize<List<Ticket>>(allText);
-                
-                    return listTickets.AsQueryable();
-                }
-                catch
-                {
-                    throw new Exception("Error encountered while opening file");
-                }
-
+                //More dynamic error handling. SHowing which file it is mapped to.
+                throw new Exception($"Error: File '{_ticketFile}' doesn't exist");
             }
-            else throw new Exception("Error occurd while fecthing data");
-        }
+            try
+            {
+                string allText = "";
+                using (StreamReader sr = File.OpenText(_ticketFile))
+                {
+                    allText = sr.ReadToEnd();
+                    //sr.Close(); //Not needed since it closes itself
+                }   
+                    
+                if (string.IsNullOrWhiteSpace(allText))
+                {
+                    return new List<Ticket>().AsQueryable();
+                }
+
+                List<Ticket> listTickets = JsonSerializer.Deserialize<List<Ticket>>(allText);
+                var flightTickets = listTickets.Where(ticket => ticket.FlightIdFK == id);
+
+                return flightTickets.AsQueryable();
+            }
+            catch (JsonException ex) //Show Json errors for debugging 
+            {
+                throw new Exception("Error encountered while transforming data from Json file", ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error encountered while opening file");
+                //throw new Exception("Error encountered while opening file", ex);
+            } 
+        }//Close GetTickets()
     }
 }

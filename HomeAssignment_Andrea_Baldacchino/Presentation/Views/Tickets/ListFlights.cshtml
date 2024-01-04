@@ -32,7 +32,7 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr class="@(item.Cancelled ? "cancelled" : "not-cancelled")">
             <td>
                 @Html.DisplayFor(modelItem => item.CountryFrom)
             </td>
@@ -52,14 +52,18 @@
                 €@Html.DisplayFor(modelItem => item.RetailPrice)
             </td>
             <td>
-                @if (item.CanBook)
-                {
-                    @Html.ActionLink("Book", "BookFlight", new { id = item.Id })
-                } 
-                else
-                {
-                    <span> Fully Booked!</span>
-                }
+            @if (item.Cancelled)
+            {
+                <span>Cancelled!</span>
+            }
+            else if (item.CanBook)
+            {
+                @Html.ActionLink("Book", "BookFlight", new { id = item.Id })
+            }
+            else
+            {
+                <span>Fully Booked!</span>
+            }
             </td>
         </tr>
 }
