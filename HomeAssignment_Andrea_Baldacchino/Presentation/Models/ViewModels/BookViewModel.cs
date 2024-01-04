@@ -1,7 +1,9 @@
-﻿using System.ComponentModel;
+﻿using Presentation.Validators;
+using System.ComponentModel;
 
 namespace Presentation.Models.ViewModels
 {
+    [DoubleBooking]
     public class BookViewModel
     {
         //Ticket properties
