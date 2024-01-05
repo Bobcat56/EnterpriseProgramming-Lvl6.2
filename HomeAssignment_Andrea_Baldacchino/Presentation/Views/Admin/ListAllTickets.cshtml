@@ -4,11 +4,7 @@
     ViewData["Title"] = "ListAllTickets";
 }
 
-<h1>ListAllTickets</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<h1>All tickets associated with flight</h1>
 <table class="table">
     <thead>
         <tr>
@@ -56,5 +52,8 @@
             </td>
         </tr>
 }
+    <td>
+        @Html.ActionLink("Back to Flights", "ListAllFlights");
+    </td>
     </tbody>
 </table>

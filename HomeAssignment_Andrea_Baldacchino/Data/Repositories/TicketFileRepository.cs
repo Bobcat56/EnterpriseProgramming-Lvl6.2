@@ -108,7 +108,6 @@ namespace Data.Repositories
 
         }
 
-
         public IQueryable<Ticket> GetTickets(Guid id)
         {
             if (!File.Exists(_ticketFile))
@@ -144,6 +143,42 @@ namespace Data.Repositories
                 throw new Exception("Error encountered while opening file");
             }
         }//Close GetTickets()
+
+        public IQueryable<Ticket> GetMyTickets(string Owner)
+        {
+            if (!File.Exists(_ticketFile))
+            {
+                //More dynamic error handling. SHowing which file it is mapped to.
+                throw new Exception($"Error: File '{_ticketFile}' doesn't exist");
+            }
+            try
+            {
+                string allText = "";
+                using (StreamReader sr = File.OpenText(_ticketFile))
+                {
+                    allText = sr.ReadToEnd();
+                    //sr.Close(); //Not needed since it closes itself
+                }
+
+                if (string.IsNullOrWhiteSpace(allText))
+                {
+                    return new List<Ticket>().AsQueryable();
+                }
+
+                List<Ticket> listTickets = JsonSerializer.Deserialize<List<Ticket>>(allText);
+                var flightTickets = listTickets.Where(ticket => ticket.Owner == Owner);
+
+                return flightTickets.AsQueryable();
+            }
+            catch (JsonException) //Show Json errors for debugging 
+            {
+                throw new Exception("Error encountered while transforming data from Json file");
+            }
+            catch (Exception)
+            {
+                throw new Exception("Error encountered while opening file");
+            }
+        }
 
         public bool IsSeatAlreadyBooked(Ticket ticket)
         {

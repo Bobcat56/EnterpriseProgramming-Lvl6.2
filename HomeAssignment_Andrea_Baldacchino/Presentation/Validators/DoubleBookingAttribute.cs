@@ -15,6 +15,7 @@ namespace Presentation.Validators
             object? value, ValidationContext validationContext)
         {
             var bookViewModel = value as BookViewModel;
+
             if (bookViewModel == null)
             {
                 throw new ArgumentException("Attribute not applied on BookViewModel");
@@ -27,7 +28,7 @@ namespace Presentation.Validators
                 throw new ArgumentException("TicketRepository not found in service provider");
             }
 
-            // Check if there's already a booked ticket with the same row and column for the given flight
+            // Checking if there's a booked ticket with the same row and column for the given flight
             var isBooked = ticketRepository.IsSeatAlreadyBooked(new Ticket
             {
                 Row = bookViewModel.Row,
@@ -37,7 +38,6 @@ namespace Presentation.Validators
 
             if (isBooked)
             {
-                // If the seat is already booked, return a validation error
                 return new ValidationResult("The seat selected has already been booked.");
             }
 

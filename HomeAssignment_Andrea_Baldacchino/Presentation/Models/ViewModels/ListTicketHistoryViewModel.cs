@@ -1,18 +1,11 @@
-﻿using Presentation.Validators;
+﻿using Domain.Models;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Presentation.Models.ViewModels
 {
-    [DoubleBooking]
-    public class BookViewModel
+    public class ListTicketHistoryViewModel
     {
-        //Ticket properties
-        public int Row { get; set; }
-        public int Column { get; set; }
-        public Guid FlightIdFK { get; set; }// Foreign Key
-        public IFormFile? Passport {  get; set; }
-        [DisplayName("Price")]
-        public double PricePaid { get; set; }
 
         //Flight Properties
         [DisplayName("Departure Date & Time")]
@@ -24,8 +17,11 @@ namespace Presentation.Models.ViewModels
         [DisplayName("Country To")]
         public string? CountryTo { get; set; }
 
-        //Icons
-        public string? OutlineIcon { get; set; }
+        //Ticket Properties
+        public Guid Id { get; set; }
+        public int Row { get; set; }
+        public int Column { get; set; }
+        public double PricePaid { get; set; }
+        public Boolean Cancelled { get; set; }
     }
 }
-

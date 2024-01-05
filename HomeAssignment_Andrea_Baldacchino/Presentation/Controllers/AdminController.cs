@@ -1,4 +1,5 @@
 ﻿using Data.Repositories;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -11,25 +12,29 @@ namespace Presentation.Controllers
     {
 
         private FlightDbRepository _flightDbRepository;
-        private TicketDBRepository _ticketDBRepository;
-        public AdminController(TicketDBRepository ticketDBRepository, FlightDbRepository flightDbRepository)
+        private ITicketRepository _ticketDBRepository;
+        private UserDBRepository _userDBRepository;
+        public AdminController(ITicketRepository ticketDBRepository, FlightDbRepository flightDbRepository, UserDBRepository userDBRepository)
         {
             _ticketDBRepository = ticketDBRepository;
             _flightDbRepository = flightDbRepository;
+            _userDBRepository = userDBRepository;
         }
 
         public IActionResult ListAllFlights()
         {
-
-
-            if (User.Identity.IsAuthenticated == false)
+            if (!User.Identity.IsAuthenticated)
             {
-                //Can make a toast which says "Only logged in users can view history of purchased tickets"
                 TempData["errorMsg"] = "You must be an Admin in to view this";
-
-                // Return to home (Index page) or other page? 
                 return RedirectToAction("Index", "Home");
-                //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying error)
+            }
+            
+            var isUserAdmin = _userDBRepository.CheckAdmin(User.Identity.Name);
+
+            if (isUserAdmin == null || !isUserAdmin.IsAdmin)
+            {
+                TempData["errorMsg"] = "You must be an Admin in to view this";
+                return RedirectToAction("Index", "Home");
             }
 
             try
@@ -37,7 +42,7 @@ namespace Presentation.Controllers
                 IQueryable<Flight> list = _flightDbRepository.GetFlights();
 
                 var output = from flight in list
-                             select new ListFlightViewModel()
+                             select new AdminListAllFlightsViewModel()
                              {
                                  Id = flight.Id,
                                  DepartureDate = flight.DepartureDate,
@@ -58,7 +63,7 @@ namespace Presentation.Controllers
 
         public IActionResult ListAllTickets(Guid id) 
         {
-            if (User.Identity.IsAuthenticated == false)
+            if (!User.Identity.IsAuthenticated)
             {
                 //Can make a toast which says "Only logged in users can view history of purchased tickets"
                 TempData["errorMsg"] = "You must be an Admin in to view this";
@@ -68,13 +73,15 @@ namespace Presentation.Controllers
                 //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying error)
             }
 
+            //if (User.Identity.IsAdmin)
+
             try
             {
                 IQueryable<Ticket> ticketList = _ticketDBRepository.GetTickets(id);
 
-                if (ticketList == null)
+                if (!ticketList.Any())
                 {
-                    TempData["msg"] = "There are no tickets booked for this flight";
+                    TempData["errorMsg"] = "There are no tickets booked for this flight";
                     return RedirectToAction("ListAllFlights");
                 }
 

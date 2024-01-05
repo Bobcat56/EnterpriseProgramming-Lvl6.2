@@ -1,6 +1,7 @@
 using Data.DataContext;
 using Data.Repositories;
 using Domain.Interfaces;
+using Domain.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,7 +19,7 @@ namespace Presentation
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<AdminUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<AirlineDbContext>();
             builder.Services.AddControllersWithViews();
 
@@ -28,7 +29,8 @@ namespace Presentation
             //builder.Services.AddScoped<ITicketRepository, TicketFileRepository>(x => new TicketFileRepository(pathToJsonFile));
             builder.Services.AddScoped<ITicketRepository, TicketDBRepository>();
             builder.Services.AddScoped(typeof(FlightDbRepository));
-            
+            builder.Services.AddScoped(typeof(UserDBRepository));
+
 
 
             var app = builder.Build();

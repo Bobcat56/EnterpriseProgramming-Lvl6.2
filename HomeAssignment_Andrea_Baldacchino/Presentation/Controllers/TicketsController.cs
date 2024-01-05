@@ -1,6 +1,7 @@
 ﻿using Data.Repositories;
 using Domain.Interfaces;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Presentation.Models.ViewModels;
 
@@ -136,7 +137,8 @@ namespace Presentation.Controllers
                             FlightIdFK = myModel.FlightIdFK,
                             PricePaid = myModel.PricePaid,
                             Passport = relativePath,
-                            Cancelled = false
+                            Cancelled = false,
+                            Owner = User.Identity.Name
                         });
                         TempData["msg"] = "Flight successfully booked";
                         return RedirectToAction("ListFlights");
@@ -166,26 +168,76 @@ namespace Presentation.Controllers
         }//CLose POST BookFlight()
 
         /*Method (and View) which returns a list of Tickets (i.e. use GetTickets from Repository) which then returns a history list 
-         *of tickets purchased by the logged in client (See Se3.3 for authentication) [1.5]
-*/
+         *of tickets purchased by the logged in client (See Se3.3 for authentication) [1.5]*/
+
+        [Authorize]
+        [HttpGet]
         public IActionResult ListTicketHistory()
         {
-            /*
-                A LOGGED IN user can view a list of their previously purchased tickets
-            */
+            /* A LOGGED IN user can view a list of their previously purchased tickets */
 
-            if (User.Identity.IsAuthenticated == false)
+            if (!User.Identity.IsAuthenticated)
             {
-                //Can make a toast which says "Only logged in users can view history of purchased tickets"
                 TempData["errorMsg"] = "You must be logged in to view this";
 
                 // Return to home (Index page) or other page? 
                 return RedirectToAction("Index", "Home");
-                //return RedirectToAction("Index", Request) //Was used for error handling testing (Brings up html page displaying erro)
             }
 
-            return View();
+            try
+            {
+                string currentuser = User.Identity.Name;
+
+                IQueryable<Ticket> list = _ticketDBRepository.GetMyTickets(currentuser);
+
+                if (list == null)
+                {
+                    TempData["errorMsg"] = "You haven't purchesd any tickets yet";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                var output = from ticket in list
+                             select new ListTicketHistoryViewModel()
+                             {
+                                 //FLight details
+                                 DepartureDate = ticket.Flight.DepartureDate,
+                                 ArrivalDate = ticket.Flight.ArrivalDate,
+                                 CountryFrom = ticket.Flight.CountryFrom,
+                                 CountryTo = ticket.Flight.CountryTo, 
+
+                                 //Ticket Details
+                                 Id = ticket.Id,
+                                 Row = ticket.Row,
+                                 Column = ticket.Column,
+                                 PricePaid = ticket.PricePaid,
+                                 Cancelled = ticket.Cancelled
+                             };
+
+                return View(output); ;
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMsg"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
         }//Close ListTicketHistory()
+
+        [HttpPost]
+        public IActionResult Cancel(Guid id)
+        {
+            try
+            {
+                _ticketDBRepository.Cancel(id);
+                TempData["successMsg"] = "Ticket cancelled successfully.";
+            }
+            catch (Exception ex)
+            {
+                TempData["errorMsg"] = "Error cancelling ticket: " + ex.Message;
+            }
+
+            // Redirect back to the ticket history view.
+            return RedirectToAction("ListTicketHistory");
+        }
 
     }//Close Controller
 }//Close Namespace

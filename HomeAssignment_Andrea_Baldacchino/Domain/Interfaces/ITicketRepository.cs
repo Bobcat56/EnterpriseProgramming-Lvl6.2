@@ -17,5 +17,7 @@ namespace Domain.Interfaces
 
         bool IsSeatAlreadyBooked(Ticket ticket);
 
+        IQueryable<Ticket> GetMyTickets(string Owner);
+
     }
 }

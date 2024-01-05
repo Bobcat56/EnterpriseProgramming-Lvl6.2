@@ -92,7 +92,7 @@ namespace Data.Repositories
                         (t => t.Id == id);
 
                     //Validation to check if ticket exists
-                    if (cancelledTicket != null)
+                    if (cancelledTicket == null)
                     {
                         throw new InvalidOperationException("This ticket does not exist");
                     }
@@ -144,6 +144,11 @@ namespace Data.Repositories
             return _AirLineDBContext.Tickets.Where(ticket => ticket.FlightIdFK == id);
         }//Close GetTickets()
 
+        public IQueryable<Ticket> GetMyTickets(string Owner)
+        {
+            // A method which returns all the tickets for a flight selected
+            return _AirLineDBContext.Tickets.Where(ticket => ticket.Owner == Owner);
+        }//Close GetTickets()
 
         public bool IsSeatAlreadyBooked(Ticket ticket)
         {
